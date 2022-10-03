@@ -1,9 +1,18 @@
 import express from "express"
 import chats from "./data/data.js";
+import cors from 'cors'
 
 const PORT = 5000;
 
 const app = express();
+
+//CORS
+const allowedOrigins = ['http://localhost:3000'];
+const options = {
+  origin: allowedOrigins
+};
+
+app.use(cors(options))
 
 app.get('/', (req, res)=>{
         res.send("API is running")
