@@ -1,10 +1,11 @@
 import express from "express"
 import chats from "./data/data.js";
 import cors from 'cors'
-import connectDB from "./config/db"
+import dotenv from 'dotenv'
+import connectDB from "./config/db.js"
 
-dotenv.comfig();
-connectDB();
+dotenv.config();
+connectDB()
 
 const PORT = 5000;
 
