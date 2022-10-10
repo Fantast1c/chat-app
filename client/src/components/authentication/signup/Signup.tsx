@@ -3,8 +3,12 @@ import { LockOutlined, UserOutlined, MailOutlined} from '@ant-design/icons';
 import type { RcFile} from 'antd/es/upload/interface';
 import { UploadOutlined } from '@ant-design/icons';
 import './Signup.css'
+import axios from 'axios';
+import { useNavigate  } from "react-router-dom";
 
 const Signup = () => {
+
+    const navigate  = useNavigate ();
 
     const beforeUpload = (file: RcFile) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -20,10 +24,34 @@ const Signup = () => {
         return isJpgOrPng && isLt2M;
       };
 
+      const onFinish =  async (values:any) =>{
+        try {
+          const config = {
+            headers: {
+              "Content-type": "application/json",
+            },
+          };
+          const { data } = await axios.post(
+            "http://localhost:5000/api/user",
+            JSON.stringify(values), config
+            );
+             
+              localStorage.setItem("userInfo", JSON.stringify(data));
+              navigate ("/chats");
+        } catch (error) {
+          console.log(error);
+          
+        }
+        
+        console.log(JSON.stringify(values));
+      
+        
+      }
+
     return (
-        <Form>
+        <Form onFinish={onFinish}>
         <Form.Item
-          name="nickname"
+          name="name"
           rules={[{ required: true, message: 'Please input your nickname!', whitespace: true }]}
         >
           <Input  prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
@@ -56,7 +84,7 @@ const Signup = () => {
         </Form.Item>
   
         <Form.Item
-          name="confirm"
+          name="confirmpassword"
           dependencies={['password']}
           hasFeedback
           rules={[
@@ -78,12 +106,7 @@ const Signup = () => {
           prefix={<LockOutlined className="site-form-item-icon" />}
            placeholder="Confirm password"/>
         </Form.Item>
-        <Upload
-        name="avatar"
-        className="avatar-uploader"
-        beforeUpload={beforeUpload}
-        maxCount={1}
-      >
+        <Upload name="avatar" className="avatar-uploader" beforeUpload={beforeUpload} maxCount={1}>
        <Button icon={<UploadOutlined />}>Upload image</Button>
       </Upload>
         <Button type="primary" htmlType="submit" className="signup-form-button">

@@ -4,6 +4,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import connectDB from "./config/db.js"
 import userRoutes from "./routes/userRoutes.js"
+import {notFound, errorHandler} from "./middleware/errorMiddleware.js"
 
 dotenv.config();
 connectDB()
@@ -33,5 +34,8 @@ app.get('/api/chat/:id', (req, res)=>{
     console.log(req.params.id)
 })
 app.use('/api/user', userRoutes)
+
+app.use(notFound)
+app.use(errorHandler)
 
 app.listen(PORT, console.log("SERVER STARTED"));
