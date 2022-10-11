@@ -5,10 +5,16 @@ import { UploadOutlined } from '@ant-design/icons';
 import './Signup.css'
 import axios from 'axios';
 import { useNavigate  } from "react-router-dom";
+import { useState } from 'react';
+
 
 const Signup = () => {
 
     const navigate  = useNavigate ();
+
+    const [pict, setPic] = useState();
+
+ 
 
     const beforeUpload = (file: RcFile) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -21,31 +27,48 @@ const Signup = () => {
           message.error('Image must smaller than 2MB!');
           return Upload.LIST_IGNORE
         }
-        return isJpgOrPng && isLt2M;
+
+        if(isJpgOrPng && isLt2M){
+          const data = new FormData();
+          data.append("file", file);
+          data.append("upload_preset", "chat-app");
+          data.append("cloud_name", "dsxiyftul");
+          fetch("https://api.cloudinary.com/v1_1/dsxiyftul/image/upload", {
+            method: "post",
+            body: data,
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              setPic(data.url.toString());
+              console.log(data.url);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+        
+        
+        return 
       };
 
       const onFinish =  async (values:any) =>{
+        
+        values.pic=pict
         try {
           const config = {
-            headers: {
-              "Content-type": "application/json",
-            },
+            headers: {"Content-type": "application/json",},
           };
+          console.log(values);
           const { data } = await axios.post(
             "http://localhost:5000/api/user",
             JSON.stringify(values), config
             );
-             
               localStorage.setItem("userInfo", JSON.stringify(data));
               navigate ("/chats");
         } catch (error) {
           console.log(error);
           
-        }
-        
-        console.log(JSON.stringify(values));
-      
-        
+        }   
       }
 
     return (
@@ -106,7 +129,7 @@ const Signup = () => {
           prefix={<LockOutlined className="site-form-item-icon" />}
            placeholder="Confirm password"/>
         </Form.Item>
-        <Upload name="avatar" className="avatar-uploader" beforeUpload={beforeUpload} maxCount={1}>
+        <Upload accept='.png, .jpeg' showUploadList={{showRemoveIcon:false}} name="avatar" className="avatar-uploader" beforeUpload={beforeUpload} maxCount={1}>
        <Button icon={<UploadOutlined />}>Upload image</Button>
       </Upload>
         <Button type="primary" htmlType="submit" className="signup-form-button">
