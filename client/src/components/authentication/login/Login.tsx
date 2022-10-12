@@ -1,12 +1,36 @@
 import {Form, Button, Input, Checkbox} from 'antd';
 import { LockOutlined, MailOutlined} from '@ant-design/icons';
+import { useNavigate  } from "react-router-dom";
 import './Login.css'
+import axios from 'axios';
 
 const Login = () => {
 
-    const onFinish = (values: any) => {
-        console.log('Success:', values);
-      };
+  const navigate  = useNavigate ();
+
+    const onFinish = async (values: any) => {
+      try {
+        const config = {
+          headers: {
+            "Content-type": "application/json",
+          },
+        };
+  
+        const { data } = await axios.post(
+          "/api/user/login",
+          { values },
+          config
+        );
+
+         console.log(JSON.stringify(data));
+        localStorage.setItem("userInfo", JSON.stringify(data));
+       
+        navigate ("/chats");
+      } catch (error) {
+        console.log(error); 
+      }
+    };
+      
 
     return (
        
