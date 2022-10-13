@@ -66,7 +66,7 @@ const Signup = () => {
               localStorage.setItem("userInfo", JSON.stringify(data));
               navigate ("/chats");
         } catch (error) {
-          console.log(error);
+          message.error("Пользователь существует!");
           
         }   
       }

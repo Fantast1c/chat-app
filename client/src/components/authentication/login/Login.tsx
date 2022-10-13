@@ -1,14 +1,20 @@
-import {Form, Button, Input, Checkbox} from 'antd';
+import {Form, Button, Input, Checkbox, message} from 'antd';
 import { LockOutlined, MailOutlined} from '@ant-design/icons';
 import { useNavigate  } from "react-router-dom";
 import './Login.css'
 import axios from 'axios';
+
+const defaultGuest={
+  email: "guest@guest.com",
+password: "guest",
+}
 
 const Login = () => {
 
   const navigate  = useNavigate ();
 
     const onFinish = async (values: any) => {
+      
       try {
         const config = {
           headers: {
@@ -17,8 +23,8 @@ const Login = () => {
         };
   
         const { data } = await axios.post(
-          "/api/user/login",
-          { values },
+          "http://localhost:5000/api/user/login",
+           values ,
           config
         );
 
@@ -27,10 +33,15 @@ const Login = () => {
        
         navigate ("/chats");
       } catch (error) {
-        console.log(error); 
+        message.error("Неверное имя пользователя или пароль")
       }
     };
       
+    const submitGuest = (defaultGuest:any) =>{
+      console.log(defaultGuest);
+      
+      onFinish(defaultGuest)
+    }
 
     return (
        
@@ -42,7 +53,13 @@ const Login = () => {
        >
          <Form.Item
            name="email"
-           rules={[{ required: true, message: 'Please input your username!' }]}
+          rules={[
+            {type: 'email', message: 'The input is not valid E-mail!'},
+            {
+              required: true,
+              message: 'Please input your E-mail!'
+            },
+          ]}
          >
            <Input 
            prefix={<MailOutlined />} placeholder="Email"
@@ -69,7 +86,7 @@ const Login = () => {
            Log in
            </Button>
            <br />
-           <Button type="default" htmlType="submit" className="login-form-button">
+           <Button onClick = {()=>{submitGuest(defaultGuest)}} type="default" htmlType="button" className="login-form-button">
            Guest
            </Button>
          </Form.Item>
