@@ -2,9 +2,20 @@ import {Tabs, Typography} from 'antd';
 import Login from '../../authentication/login/Login';
 import Signup from '../../authentication/signup/Signup';
 import './HomePage.css'
+import {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
 
 const HomePage = () => {
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // @ts-ignore
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+
+    if (user) navigate("/chats");
+  }, [navigate]);
 
   return (
     <div className='container'>
